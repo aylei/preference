@@ -482,3 +482,12 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  )
 )
+
+(defun bb/setup-term-mode ()
+  (evil-local-set-key 'insert (kbd "C-r") 'bb/send-C-r))
+
+(defun bb/send-C-r ()
+  (interactive)
+  (term-send-raw-string "\C-r"))
+
+(add-hook 'term-mode-hook 'bb/setup-term-mode)
