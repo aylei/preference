@@ -13,3 +13,5 @@ source <(kubectl completion zsh)
 
 alias e="~/.launch-emacs.sh"
 alias emacsd="emacs --daemon"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
