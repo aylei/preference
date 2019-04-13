@@ -3,7 +3,7 @@ export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin 
 
 ZSH_THEME="robbyrussell"
-plugins=(git kubectl docker autojump)
+plugins=(git kubectl docker autojump osx virtualenv)
 
 
 source $ZSH/oh-my-zsh.sh
@@ -13,5 +13,7 @@ source <(kubectl completion zsh)
 
 alias e="~/.launch-emacs.sh"
 alias emacsd="emacs --daemon"
+
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
