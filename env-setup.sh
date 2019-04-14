@@ -18,14 +18,16 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     OS="linux"
     # Prefer modern package manager...
     if hash dnf 2>/dev/null; then
-        PM="sudo dnf"
+        dnf update
+        PM="dnf"
     elif hash apt-get 2>/dev/null; then
-        PM="sudo apt-get"
+        apt-get update
+        PM="apt-get"
     elif hash pacman 2>/dev/null; then
         PM="pacman -S"
     elif hash yum 2>/dev/null; then
-        sudo yum update
-        PM="sudo yum -y"
+        yum update
+        PM="yum -y"
     fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     OS="darwin"
@@ -45,7 +47,11 @@ fi
 
 # Check git
 if ! command -v git >/dev/null 2>&1; then
-    $PM install git
+    if [[ $PM == "brew" ]]; then
+        $PM install git
+    else
+        $PM install git-all
+    fi
 fi
 
 # Check emacs
@@ -82,7 +88,15 @@ if ! command -v autojump >/dev/null 2>&1; then
     $PM install autojump
 fi
 
-# Check Golang
+# Check docker-cli
+if ! command -v docker >/dev/null 2>&1; then
+    curl -sSL https://experimental.docker.com/builds/Linux/x86_64/docker-1.12.0.tgz
+    tar zxvf docker-1.12.0.tgz docker
+    mv docker /usr/local/bin/
+    rm docker-1.12.0.tgz
+fi
+
+# Setup Go environment
 if ! command -v go >/dev/null 2>&1; then
     GO_VERSION="1.12.4"
     curl -fsSL https://golang.org/dl/go$GO_VERSION.$OS-amd64.tar.gz -o golang.tar.gz
@@ -90,9 +104,14 @@ if ! command -v go >/dev/null 2>&1; then
     rm golang.tar.gz
 fi
 
-# Check Rust
+# Setup Rust environment
 if ! command -v cargo >/dev/null 2>&1; then
     curl https://sh.rustup.rs -sSf | sh
+
+    # tools
+    rustup component add rustfmt
+    rustup toolchain add nightly
+    cargo +nightly install racer
 fi
 
 # Install oh-my-zsh

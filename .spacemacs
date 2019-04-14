@@ -34,6 +34,7 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(rust
+     go
      yaml
      markdown
      ;; ----------------------------------------------------------------
@@ -50,11 +51,10 @@ This function should only modify configuration layer settings."
      multiple-cursors
      treemacs
      org
-     jsonnet
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
-     spell-checking
+     ;; spell-checking
      osx
      ;; syntax-checking
      ;; version-control
