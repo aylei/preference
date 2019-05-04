@@ -1,6 +1,6 @@
 export ZSH=$HOME/.oh-my-zsh
 export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin 
+export PATH=$PATH:$GOPATH/bin
 
 ZSH_THEME="robbyrussell"
 plugins=(git kubectl docker autojump osx virtualenv)

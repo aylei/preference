@@ -26,6 +26,8 @@ set timeoutlen=1000 ttimeoutlen=0
 set lcs=tab:>-,trail:~,nbsp:%
 set list
 
+inoremap fd <Esc>
+
 "----------------------------------------
 " => Vundle
 "----------------------------------------
@@ -138,4 +140,3 @@ endif
 " For perlomni.vim setting.
 " https://github.com/c9s/perlomni.vim
 let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-
