@@ -33,7 +33,9 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '((shell :variables
+   '(html
+     vimscript
+     (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
      (lsp :variables
@@ -54,7 +56,9 @@ This function should only modify configuration layer settings."
      markdown
      multiple-cursors
      treemacs
-     org
+     (org :variables
+          org-want-todo-bindings t
+          org-enable-hugo-support t)
      ;; spell-checking
      osx
      ;; syntax-checking
@@ -460,6 +464,13 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  (setq dotspacemacs-autosave-file-directly t)
+  (add-hook 'auto-save-hook 'save-buffer-if-visiting-file)
+
+  (setq vc-follow-symlinks t)
+
+  (aylei/configure-org-mode)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -476,7 +487,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (company-terraform terraform-mode hcl-mode toml-mode pos-tip helm-gtags ggtags flycheck-rust flycheck counsel-gtags cargo rust-mode jsonnet-mode ql vmd-mode mmm-mode markdown-toc markdown-mode gh-md emoji-cheat-sheet-plus company-emoji company ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen treemacs-projectile treemacs-evil treemacs ht pfuture toc-org symon string-inflection spaceline-all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump doom-modeline eldoc-eval shrink-path all-the-icons memoize f dash s define-word counsel-projectile projectile counsel swiper ivy pkg-info epl column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra font-lock+ evil goto-chg undo-tree dotenv-mode diminish bind-map bind-key async))))
+    (web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css company-web web-completion-data add-node-modules-path vimrc-mode dactyl-mode ox-hugo company-terraform terraform-mode hcl-mode toml-mode pos-tip helm-gtags ggtags flycheck-rust flycheck counsel-gtags cargo rust-mode jsonnet-mode ql vmd-mode mmm-mode markdown-toc markdown-mode gh-md emoji-cheat-sheet-plus company-emoji company ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen treemacs-projectile treemacs-evil treemacs ht pfuture toc-org symon string-inflection spaceline-all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump doom-modeline eldoc-eval shrink-path all-the-icons memoize f dash s define-word counsel-projectile projectile counsel swiper ivy pkg-info epl column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra font-lock+ evil goto-chg undo-tree dotenv-mode diminish bind-map bind-key async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -494,7 +505,92 @@ This function is called at the very end of Spacemacs initialization."
 
 (add-hook 'term-mode-hook 'bb/setup-term-mode)
 (add-hook 'org-mode-hook 'auto-fill-mode)
-(add-hook 'org-mode-hook '(lambda () (setq fill-column 90)))
+(add-hook 'org-mode-hook '(lambda () (setq fill-column 85)))
 
 (with-eval-after-load 'dired
   (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
+
+(defun aylei/configure-org-mode ()
+  (require 'org-checklist)
+
+  (add-hook 'org-mode-hook 'turn-on-auto-fill)
+  (add-hook 'org-mode-hook 'flyspell-mode)
+
+  ;; settings
+  (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|org\\.txt\\)$" . org-mode))
+  (setq org-startup-indented t)
+  (setq org-cycle-separator-lines 1)
+  (setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
+  (setq org-agenda-file-regexp "\\`[^.].*\\.\\(org\\.txt\\|org\\)\\'")
+  (setq org-clock-idle-time 15)
+  (setq org-ellipsis " ▼") ;; http://endlessparentheses.com/changing-the-org-mode-ellipsis.html
+
+  ;; keybindings
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "z" 'org-add-note)
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "F" 'org-attach)
+  (spacemacs/set-leader-keys-for-major-mode 'org-mode "g" 'org-mac-grab-link)
+
+  ;; todos
+  (setq org-todo-keywords
+        (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+                (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "MIGRATED(m@/!)" "PHONE" "MEETING"))))
+
+  (setq org-todo-state-tags-triggers
+        (quote (("CANCELLED" ("CANCELLED" . t))
+                ("WAITING" ("WAITING" . t))
+                ("MIGRATED" ("MIGRATED" . t))
+                ("HOLD" ("WAITING") ("HOLD" . t))
+                (done ("WAITING") ("HOLD"))
+                ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
+                ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
+                ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
+
+  ;; agenda
+  (setq org-agenda-files (list org-directory))
+  (setq org-agenda-skip-scheduled-if-done t)
+  (setq org-agenda-skip-deadline-if-done t)
+
+  ;; tags
+  ;; Tags with fast selection keys
+  (setq org-tag-alist (quote ((:startgroup)
+                              ("@errand" . ?e)
+                              ("@office" . ?o)
+                              ("@home" . ?H)
+                              (:endgroup)
+                              ("WAITING" . ?w)
+                              ("MIGRATED" . ?M)
+                              ("HOLD" . ?h)
+                              ("IDEA" . ?i)
+                              ("PERSONAL" . ?P)
+                              ("DRAFT" . ?D)
+                              ("WORK" . ?W)
+                              ("NOTE" . ?n)
+                              ("CANCELLED" . ?c)
+                              ("FLAGGED" . ??))))
+
+  ;; capture
+  (setq org-capture-templates
+        (quote (("t" "todo" entry (file org-default-notes-file)
+                 "* TODO %?\n%U\n%a\n")
+                ("p" "Protocol" entry (file org-default-notes-file)
+                 "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
+                ("L" "Protocol Link" entry (file org-default-notes-file)
+                 "* TODO %? [[%:link][%:description]] \nCaptured On: %U")
+                ("m" "meeting" entry (file org-default-notes-file)
+                 "* MEETING with %? :MEETING:\n%U")
+                ("i" "idea" entry (file org-default-notes-file)
+                 "* %? :IDEA:\n%U\n%a\n")
+                ("n" "note" entry (file org-default-notes-file)
+                 "* %? :NOTE:\n%U\n%a\n")
+                ("h" "habit" entry (file org-default-notes-file)
+                 "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+
+  ;; refiling
+  (setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                   (org-agenda-files :maxlevel . 9))))
+
+  ;; pomodoro
+  (add-hook 'org-pomodoro-finished-hook (lambda()
+                                          (org-journal-new-entry nil)
+                                          ))
+  )
