@@ -43,7 +43,11 @@ This function should only modify configuration layer settings."
      (rust :variables
            rust-backend 'lsp)
      (go :variables
-         go-backend 'lsp)
+         go-use-gometalinter t
+         gofmt-command "goimports"
+         go-tab-width 4
+         godoc-at-point-function 'godoc-gogetdoc
+         go-format-before-save t)
      (terraform :variables terraform-auto-format-on-save t)
      json
      yaml
@@ -514,13 +518,13 @@ This function is called at the very end of Spacemacs initialization."
   (require 'org-checklist)
 
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
-  (add-hook 'org-mode-hook 'flyspell-mode)
+  ;; (add-hook 'org-mode-hook 'flyspell-mode)
 
   ;; settings
   (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|org\\.txt\\)$" . org-mode))
   (setq org-startup-indented t)
   (setq org-cycle-separator-lines 1)
-  (setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
+  ;; (setq org-blank-before-new-entry '((heading . t) (plain-list-item . nil)))
   (setq org-agenda-file-regexp "\\`[^.].*\\.\\(org\\.txt\\|org\\)\\'")
   (setq org-clock-idle-time 15)
   (setq org-ellipsis " ▼") ;; http://endlessparentheses.com/changing-the-org-mode-ellipsis.html
@@ -570,19 +574,26 @@ This function is called at the very end of Spacemacs initialization."
 
   ;; capture
   (setq org-capture-templates
-        (quote (("t" "todo" entry (file org-default-notes-file)
+        (quote (("t" "todo"
+                 entry (file+headline org-default-notes-file "Tasks")
                  "* TODO %?\n%U\n%a\n")
-                ("p" "Protocol" entry (file org-default-notes-file)
+                ("p" "Protocol"
+                 entry (file+headline org-default-notes-file "Inspiration")
                  "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
-                ("L" "Protocol Link" entry (file org-default-notes-file)
+                ("L" "Protocol Link"
+                 entry (file+headline org-default-notes-file "Reading List")
                  "* TODO %? [[%:link][%:description]] \nCaptured On: %U")
-                ("m" "meeting" entry (file org-default-notes-file)
+                ("m" "meeting"
+                 entry (file+headline org-default-notes-file "Tasks")
                  "* MEETING with %? :MEETING:\n%U")
-                ("i" "idea" entry (file org-default-notes-file)
+                ("i" "idea"
+                 entry (file+headline org-default-notes-file "Inspiration")
                  "* %? :IDEA:\n%U\n%a\n")
-                ("n" "note" entry (file org-default-notes-file)
+                ("n" "note"
+                 entry (file+headline org-default-notes-file "Notes")
                  "* %? :NOTE:\n%U\n%a\n")
-                ("h" "habit" entry (file org-default-notes-file)
+                ("h" "habit"
+                 entry (file+headline org-default-notes-file "Routine")
                  "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
   ;; refiling
