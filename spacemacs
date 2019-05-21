@@ -34,6 +34,10 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(html
+     (deft :variables
+       deft-directory "~/org"
+       deft-extensions '("org", "md"))
+     templates
      vimscript
      (shell :variables
             shell-default-height 30
@@ -43,7 +47,7 @@ This function should only modify configuration layer settings."
      (rust :variables
            rust-backend 'lsp)
      (go :variables
-         go-use-gometalinter t
+         go-use-golangci-lint t
          gofmt-command "goimports"
          go-tab-width 4
          godoc-at-point-function 'godoc-gogetdoc
@@ -489,9 +493,12 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   (quote
+    ("/Users/alei/org/blog/post.org" "/Users/alei/org/coding/cheat-sheet.org" "/Users/alei/org/coding/tidb-operator.org" "/Users/alei/org/gtd/blog-plan.org" "/Users/alei/org/gtd/okr.org" "/Users/alei/org/notes.org")))
  '(package-selected-packages
    (quote
-    (web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css company-web web-completion-data add-node-modules-path vimrc-mode dactyl-mode ox-hugo company-terraform terraform-mode hcl-mode toml-mode pos-tip helm-gtags ggtags flycheck-rust flycheck counsel-gtags cargo rust-mode jsonnet-mode ql vmd-mode mmm-mode markdown-toc markdown-mode gh-md emoji-cheat-sheet-plus company-emoji company ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen treemacs-projectile treemacs-evil treemacs ht pfuture toc-org symon string-inflection spaceline-all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump doom-modeline eldoc-eval shrink-path all-the-icons memoize f dash s define-word counsel-projectile projectile counsel swiper ivy pkg-info epl column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra font-lock+ evil goto-chg undo-tree dotenv-mode diminish bind-map bind-key async))))
+    (yatemplate deft web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode simple-httpd helm-css-scss haml-mode emmet-mode counsel-css company-web web-completion-data add-node-modules-path vimrc-mode dactyl-mode ox-hugo company-terraform terraform-mode hcl-mode toml-mode pos-tip helm-gtags ggtags flycheck-rust flycheck counsel-gtags cargo rust-mode jsonnet-mode ql vmd-mode mmm-mode markdown-toc markdown-mode gh-md emoji-cheat-sheet-plus company-emoji company ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen treemacs-projectile treemacs-evil treemacs ht pfuture toc-org symon string-inflection spaceline-all-the-icons spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state iedit evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens smartparens paredit evil-args evil-anzu anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump doom-modeline eldoc-eval shrink-path all-the-icons memoize f dash s define-word counsel-projectile projectile counsel swiper ivy pkg-info epl column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra font-lock+ evil goto-chg undo-tree dotenv-mode diminish bind-map bind-key async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -508,8 +515,7 @@ This function is called at the very end of Spacemacs initialization."
   (term-send-raw-string "\C-r"))
 
 (add-hook 'term-mode-hook 'bb/setup-term-mode)
-(add-hook 'org-mode-hook 'auto-fill-mode)
-(add-hook 'org-mode-hook '(lambda () (setq fill-column 85)))
+(add-hook 'go-mode-hook 'spacemacs/toggle-aggressive-indent-on)
 
 (with-eval-after-load 'dired
   (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
@@ -517,7 +523,8 @@ This function is called at the very end of Spacemacs initialization."
 (defun aylei/configure-org-mode ()
   (require 'org-checklist)
 
-  (add-hook 'org-mode-hook 'turn-on-auto-fill)
+  (add-hook 'org-mode-hook 'spacemacs/toggle-truncate-lines-on)
+  ;; (add-hook 'org-mode-hook 'turn-on-auto-fill)
   ;; (add-hook 'org-mode-hook 'flyspell-mode)
 
   ;; settings
@@ -550,7 +557,8 @@ This function is called at the very end of Spacemacs initialization."
                 ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
   ;; agenda
-  (setq org-agenda-files (list org-directory))
+  ;; (setq org-agenda-files '("~/org"))
+  (setq org-agenda-files (directory-files-recursively org-directory org$))
   (setq org-agenda-skip-scheduled-if-done t)
   (setq org-agenda-skip-deadline-if-done t)
 
@@ -577,6 +585,9 @@ This function is called at the very end of Spacemacs initialization."
         (quote (("t" "todo"
                  entry (file+headline org-default-notes-file "Tasks")
                  "* TODO %?\n%U\n%a\n")
+                ("a" "anchor"
+                 entry (file+headline org-default-notes-file "Anchors")
+                 "* %A")
                 ("p" "Protocol"
                  entry (file+headline org-default-notes-file "Inspiration")
                  "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")

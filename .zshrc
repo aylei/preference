@@ -17,3 +17,4 @@ alias emacsd="emacs --daemon"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+if hash tkctl 2>/dev/null; then source <(tkctl completion zsh); fi
