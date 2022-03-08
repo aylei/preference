@@ -83,3 +83,5 @@ alias kdsecn='kubectl describe secret --namespace'
 alias kgsln='kubectl get --show-labels --namespace'
 alias kgposln='kubectl get pods --show-labels --namespace'
 alias kgdepsln='kubectl get deployment --show-labels --namespace'
+alias kgpf="kubectl get pod -o go-template='{{range.status.containerStatuses}}{{\"Container Name: \"}}{{.name}}{{\"\r\nLastState: \"}}{{.lastState}}{{end}}'"
+alias kginfra='kubectl get network,cluster,backup,restore,networkpeer'
